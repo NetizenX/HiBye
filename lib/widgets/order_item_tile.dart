@@ -4,7 +4,7 @@ import 'package:hibye/model/order_item.dart';
 import 'package:hibye/currency.dart';
 import 'package:provider/provider.dart';
 import 'package:hibye/model/data.dart';
-import 'package:hibye/screen_size.dart';
+// import 'package:hibye/screen_size.dart';
 
 class OrderItemTile extends StatelessWidget {
   final OrderItem? orderItem;
@@ -36,7 +36,7 @@ class OrderItemTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '(${orderItem!.quantity}) ' + orderItem!.item.name,
+                '(${orderItem!.quantity}) ' + orderItem!.item,
               ),
               Text(
                 currencyString(orderItem!.subTotal),

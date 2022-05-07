@@ -11,7 +11,7 @@ class Data extends ChangeNotifier {
   String currentMenu = 'main';
   late DocumentReference activeOrderRef;
 
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   void changeCurrentMenu(String menu) {
     currentMenu = menu;
@@ -39,7 +39,7 @@ class Data extends ChangeNotifier {
 
   Future<List<MenuItem>> getMenu() async {
     List<MenuItem> menu = [];
-    QuerySnapshot querySnapshot = await _firestore
+    QuerySnapshot querySnapshot = await firestore
         .collection('menu_items')
         .where('menu', isEqualTo: currentMenu)
         .orderBy('order')
@@ -58,7 +58,7 @@ class Data extends ChangeNotifier {
   void orderTest() async {
     // Search for Status == active, userID == orders, else create it
     String user = FirebaseAuth.instance.currentUser!.uid;
-    QuerySnapshot orderQuerySnap = await _firestore
+    QuerySnapshot orderQuerySnap = await firestore
         .collection('orders')
         .where('user', isEqualTo: user)
         .where('status', isEqualTo: 'active')
@@ -66,16 +66,17 @@ class Data extends ChangeNotifier {
     List<QueryDocumentSnapshot> orders = orderQuerySnap.docs;
     if (orders.isNotEmpty) {
       QueryDocumentSnapshot order = orders[0];
-      activeOrderRef = _firestore.collection('orders').doc(order.id);
+      activeOrderRef = firestore.collection('orders').doc(order.id);
       print('found an active order for that user');
     } else {
-      await _firestore
+      await firestore
           .collection('orders')
           .add({'user': user, 'status': 'active'}).then((newDoc) {
-        activeOrderRef = _firestore.collection('orders').doc(newDoc.id);
+        activeOrderRef = firestore.collection('orders').doc(newDoc.id);
       });
       print('created that order');
     }
+    notifyListeners();
   }
 
   // Future<void> loadMenu() async {

@@ -1,23 +1,23 @@
-import 'menu_item.dart';
-
 class OrderItem {
-  late MenuItem item;
+  late String item;
+  late double price;
   late int quantity;
   late double subTotal;
 
-  OrderItem({required MenuItem item, int quantity = 1}) {
+  OrderItem({required String item, required double price, int quantity = 1}) {
     this.item = item;
+    this.price = price;
     this.quantity = quantity;
-    this.subTotal = item.price * quantity;
+    this.subTotal = price * quantity;
   }
 
   void setQuantity(int qty) {
     quantity = qty;
-    subTotal = item.price * quantity;
+    subTotal = price * quantity;
   }
 
   void increment() {
     quantity++;
-    subTotal = item.price * quantity;
+    subTotal = price * quantity;
   }
 }

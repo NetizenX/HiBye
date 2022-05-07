@@ -6,6 +6,8 @@ import 'package:hibye/model/data.dart';
 import 'order_item_tile.dart';
 import 'package:hibye/screens/payment_screen.dart';
 import 'package:hibye/screen_size.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hibye/model/order_item.dart';
 
 class OrderTray extends StatelessWidget {
   // const OrderTray({Key? key}) : super(key: key);
@@ -44,18 +46,29 @@ class OrderTray extends StatelessWidget {
                 child: Scrollbar(
                   controller: _scrollController,
                   isAlwaysShown: true,
-                  child: ListView.builder(
-                      itemCount: Provider.of<Data>(context).order.orderLength(),
-                      itemBuilder: (context, int index) {
-                        return Card(
-                          child: OrderItemTile(
-                            index: index,
-                            orderItem: Provider.of<Data>(context)
-                                .order
-                                .getOrderItem(index),
-                          ),
-                        );
-                      }),
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('orders')
+                        .doc('c9q0R9cWV3dtfTFWOTpE')
+                        .collection('items')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      return ListView.builder(
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, int index) {
+                            return Card(
+                              child: OrderItemTile(
+                                index: index,
+                                orderItem: OrderItem(
+                                    item:
+                                        snapshot.data!.docs[index].get('item'),
+                                    price: snapshot.data!.docs[index]
+                                        .get('subTotal')),
+                              ),
+                            );
+                          });
+                    },
+                  ),
                 ),
               ),
               TextButton(

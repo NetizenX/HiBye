@@ -17,13 +17,13 @@ class Order {
       // if the item is already on the order, just increase the quantity
       if (orderItem.item == menuItem) {
         orderItem.increment();
-        orderItem.subTotal = orderItem.item.price * orderItem.quantity;
+        //    orderItem.subTotal = orderItem.item.price * orderItem.quantity;
         calculateTotal();
         return;
       }
     }
     // not in order, add it
-    items.add(OrderItem(item: menuItem));
+    // items.add(OrderItem(item: menuItem));
     calculateTotal();
   }
 
