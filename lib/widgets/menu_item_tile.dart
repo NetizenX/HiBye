@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hibye/constants.dart';
+import '../constants.dart';
 import 'package:provider/provider.dart';
-import 'package:hibye/model/menu_item.dart';
-import 'package:hibye/model/data.dart';
-import 'package:hibye/currency.dart';
-import 'package:hibye/screen_size.dart';
+import '../model/item_on_menu.dart';
+import '../model/data.dart';
+import '../currency.dart';
+import '../screen_size.dart';
 
 class MenuItemTile extends StatelessWidget {
-  MenuItem menuItem;
+  ItemOnMenu menuItem;
 
-  MenuItemTile({required MenuItem this.menuItem});
+  MenuItemTile({required ItemOnMenu this.menuItem});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,8 @@ class MenuItemTile extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(15.0),
             child: Image(
-              width: screenWidth(context) * .25,
+              width:
+                  screenWidth(context) * .2, // Worked except word wrap @ 0.25
               image: AssetImage(menuItem.image),
             ),
           ),

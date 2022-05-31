@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:hibye/constants.dart';
-import 'package:hibye/model/user.dart';
+import '../constants.dart';
+import '../model/user.dart';
 import 'package:provider/provider.dart';
 
 class LogoutButton extends StatelessWidget {

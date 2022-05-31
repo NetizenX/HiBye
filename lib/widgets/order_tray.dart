@@ -1,25 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:hibye/constants.dart';
-import 'package:hibye/currency.dart';
-import 'package:hibye/model/data.dart';
-import 'order_item_tile.dart';
-import 'package:hibye/screens/payment_screen.dart';
-import 'package:hibye/screen_size.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hibye/model/order_item.dart';
+import '../constants.dart';
+import '../screens/payment_screen.dart';
+import '../screen_size.dart';
+import 'order_list.dart';
+import '../widgets/total.dart';
 
 class OrderTray extends StatelessWidget {
-  // const OrderTray({Key? key}) : super(key: key);
-  ScrollController _scrollController = ScrollController();
-
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 500),
-      height: Provider.of<Data>(context, listen: false).showOrderTray
-          ? screenHeight(context) * 0.25
-          : 0.0,
+    // Removed slide-in function, now always shown - NX
+    // return AnimatedContainer(
+    //   duration: Duration(milliseconds: 500),
+    //   height: Provider.of<Data>(context, listen: false).showOrderTray
+    //       ? screenHeight(context) * 0.25
+    //       : 0.0,
+    return Container(
+      height: screenHeight(context) * 0.25,
       padding: EdgeInsets.only(top: 20.0),
       decoration: BoxDecoration(
           color: kPopOverColor,
@@ -43,33 +39,7 @@ class OrderTray extends StatelessWidget {
               Container(
                 height: screenHeight(context) * 0.15,
                 width: screenWidth(context) * 0.6,
-                child: Scrollbar(
-                  controller: _scrollController,
-                  isAlwaysShown: true,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('orders')
-                        .doc('c9q0R9cWV3dtfTFWOTpE')
-                        .collection('items')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      return ListView.builder(
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, int index) {
-                            return Card(
-                              child: OrderItemTile(
-                                index: index,
-                                orderItem: OrderItem(
-                                    item:
-                                        snapshot.data!.docs[index].get('item'),
-                                    price: snapshot.data!.docs[index]
-                                        .get('subTotal')),
-                              ),
-                            );
-                          });
-                    },
-                  ),
-                ),
+                child: OrderList(),
               ),
               TextButton(
                 onPressed: () {
@@ -91,8 +61,8 @@ class OrderTray extends StatelessWidget {
                     SizedBox(
                       height: 5.0,
                     ),
-                    Text(currencyString(
-                        Provider.of<Data>(context, listen: false).order.total)),
+                    // Order total
+                    Total(),
                   ],
                 ),
               )

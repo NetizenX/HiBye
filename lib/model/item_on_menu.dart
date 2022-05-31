@@ -1,4 +1,4 @@
-class MenuItem {
+class ItemOnMenu {
   // late String docID;
   late String name;
   late double price;
@@ -9,7 +9,7 @@ class MenuItem {
       category; // name of sub-menu clicking through links to  String name;
   late int order;
 
-  MenuItem(Map<String, dynamic> map) {
+  ItemOnMenu(Map<String, dynamic> map) {
     // this.docID = map['docID'];
     this.name = map['name'];
     this.price = map['price'];

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hibye/constants.dart';
-import 'package:hibye/model/order_item.dart';
-import 'package:hibye/currency.dart';
+import '../constants.dart';
+import '../model/order_item.dart';
+import '../currency.dart';
 import 'package:provider/provider.dart';
-import 'package:hibye/model/data.dart';
+import '../model/data.dart';
 // import 'package:hibye/screen_size.dart';
 
 class OrderItemTile extends StatelessWidget {
@@ -19,7 +19,7 @@ class OrderItemTile extends StatelessWidget {
     } else {
       return Dismissible(
         onDismissed: (direction) => Provider.of<Data>(context, listen: false)
-            .removeFromOrder(index: index),
+            .removeFromOrder(id: orderItem!.id, price: orderItem!.price),
         key: UniqueKey(),
         child: Container(
           width: 10.0,

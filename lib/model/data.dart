@@ -1,44 +1,48 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:hibye/model/menu_item.dart';
-import 'order.dart';
+import 'package:flutter/material.dart';
+import 'item_on_menu.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Data extends ChangeNotifier {
-  Order order = Order();
-  bool showOrderTray = false;
+  // Order order = Order();
+  double total = 0.0;
   String currentMenu = 'main';
   late DocumentReference activeOrderRef;
-
   FirebaseFirestore firestore = FirebaseFirestore.instance;
+  late Stream totalStream;
 
   void changeCurrentMenu(String menu) {
     currentMenu = menu;
     notifyListeners();
   }
 
-  void addToOrder(MenuItem item) {
+  void updateTotal(double amount) async {
+    DocumentSnapshot docSnap = await activeOrderRef.get();
+    Map<String, dynamic> docData = docSnap.data()! as Map<String, dynamic>;
+    double currentTotal = docData['total'];
+    currentTotal += amount;
+    activeOrderRef.update({'total': currentTotal});
+  }
+
+  void addToOrder(ItemOnMenu item) async {
+    //TODO: Check for existing item and add quantity
     activeOrderRef
         .collection('items')
-        .add({'item': item.name, 'quantity': 1, 'subTotal': item.price});
-    order.add(item);
-    showOrderTray = true;
-    notifyListeners();
+        .add({'item': item.name, 'quantity': 1, 'price': item.price});
+    updateTotal(item.price);
+    // order.add(item);
+    // notifyListeners();
   }
 
-  void removeFromOrder({required int index}) {
-    order.remove(index: index);
-    if (order.orderLength() == 0) {
-      showOrderTray = false;
-    }
-    notifyListeners();
+  void removeFromOrder({required String id, required double price}) {
+    activeOrderRef.collection('items').doc(id).delete();
+    updateTotal(-price);
+    // notifyListeners();
   }
 
-  // int menuLength() => menuItems.length;
-
-  Future<List<MenuItem>> getMenu() async {
-    List<MenuItem> menu = [];
+  Future<List<ItemOnMenu>> getMenu() async {
+    List<ItemOnMenu> menu = [];
     QuerySnapshot querySnapshot = await firestore
         .collection('menu_items')
         .where('menu', isEqualTo: currentMenu)
@@ -49,13 +53,13 @@ class Data extends ChangeNotifier {
     // List menuList = querySnapshot.docs.map((doc) => doc.data()).toList();
     for (DocumentSnapshot doc in querySnapshot.docs) {
       Map<String, dynamic> docMap = doc.data() as Map<String, dynamic>;
-      menu.add(MenuItem(docMap));
+      menu.add(ItemOnMenu(docMap));
       // print(docMap.toString());
     }
     return menu;
   }
 
-  void orderTest() async {
+  void initializeOrder() async {
     // Search for Status == active, userID == orders, else create it
     String user = FirebaseAuth.instance.currentUser!.uid;
     QuerySnapshot orderQuerySnap = await firestore
@@ -71,20 +75,32 @@ class Data extends ChangeNotifier {
     } else {
       await firestore
           .collection('orders')
-          .add({'user': user, 'status': 'active'}).then((newDoc) {
+          .add({'user': user, 'status': 'active', 'total': 0.0}).then((newDoc) {
         activeOrderRef = firestore.collection('orders').doc(newDoc.id);
       });
       print('created that order');
     }
+    // Setup the stream used to display the order total
+    totalStream = activeOrderRef.snapshots();
     notifyListeners();
   }
 
-  // Future<void> loadMenu() async {
-  //   for (String menuName in menuItems.keys) {
-  //     for (MenuItem item in menuItems[menuName]!) {
-  //       print(item.toMap());
-  //       await _firestore.collection('menu_items').add(item.toMap());
-  //     }
-  //   }
-  // }
+  void submitOrder() {
+    activeOrderRef.update({'status': 'submitted'});
+    initializeOrder();
+    // notifyListeners();
+  }
+
+  void orderTest() async {
+    // FirebaseFirestore firestore = FirebaseFirestore.instance;
+    // CollectionReference collectionRef = firestore.collection('orders');
+    // DocumentReference docRef = collectionRef.doc('OyaA66XkTFG9rsNGNtzr');
+    // DocumentSnapshot snapshot = await docRef.get();
+    // Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+    // double price = data['total'];
+    DocumentSnapshot orderSnap = await activeOrderRef.get();
+    dynamic data = orderSnap.data();
+    double price = data['total'];
+    print(price);
+  }
 }

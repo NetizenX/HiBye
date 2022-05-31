@@ -1,5 +1,5 @@
 import 'order_item.dart';
-import 'menu_item.dart';
+import 'item_on_menu.dart';
 
 class Order {
   List<OrderItem> items = [];
@@ -12,7 +12,7 @@ class Order {
     }
   }
 
-  void add(MenuItem menuItem) {
+  void add(ItemOnMenu menuItem) {
     for (OrderItem orderItem in items) {
       // if the item is already on the order, just increase the quantity
       if (orderItem.item == menuItem) {

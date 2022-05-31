@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:hibye/model/data.dart';
+import '../model/data.dart';
 import 'package:provider/provider.dart';
-import 'package:hibye/model/data.dart';
-import 'package:hibye/currency.dart';
-import 'package:hibye/widgets/order_item_tile.dart';
-import 'package:hibye/model/user.dart';
+import '../model/user.dart';
+import '../widgets/order_list.dart';
+import 'package:intl/intl.dart';
+import '../widgets/total.dart';
 
 class PaymentScreen extends StatelessWidget {
   const PaymentScreen({Key? key}) : super(key: key);
@@ -16,20 +16,14 @@ class PaymentScreen extends StatelessWidget {
           AppBar(title: Text('Hi${Provider.of<User>(context).getFirstName()}')),
       body: Column(
         children: [
-          Text(
-              'Amount due ${currencyString(Provider.of<Data>(context).order.total)}'),
-          Container(
-            height: 100.0,
-            child: ListView.builder(
-                itemCount: Provider.of<Data>(context).order.orderLength(),
-                itemBuilder: (context, int index) {
-                  return OrderItemTile(
-                    index: index,
-                    orderItem:
-                        Provider.of<Data>(context).order.getOrderItem(index),
-                  );
-                }),
-          ),
+          Total(),
+          Container(height: 400.0, child: OrderList()),
+          TextButton(
+              onPressed: () {
+                Provider.of<Data>(context, listen: false).submitOrder();
+                Navigator.pop(context);
+              },
+              child: Text('Place Order')),
         ],
       ),
     );

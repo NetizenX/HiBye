@@ -1,18 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:hibye/constants.dart';
-import 'package:hibye/widgets/menu_item_tile.dart';
+import '../constants.dart';
+import '../widgets/menu_item_tile.dart';
 import 'package:provider/provider.dart';
-import 'package:hibye/model/data.dart';
-import 'package:hibye/model/menu_item.dart';
-import 'package:hibye/widgets/order_tray.dart';
-import 'package:hibye/widgets/logout_button.dart';
-import 'package:hibye/model/user.dart';
+import '../model/data.dart';
+import '../model/item_on_menu.dart';
+import '../widgets/order_tray.dart';
+import '../widgets/logout_button.dart';
+import '../model/user.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  @override
+  void initState() {
+    print('initState');
+    Provider.of<Data>(context, listen: false).initializeOrder();
+  }
+
   Future<List<Widget>> menuTiles(BuildContext context) async {
     List<Widget> result = [];
-    List<MenuItem> menuItemList = await Provider.of<Data>(context).getMenu();
-    for (MenuItem menuItem in menuItemList) {
+    List<ItemOnMenu> menuItemList = await Provider.of<Data>(context).getMenu();
+    for (ItemOnMenu menuItem in menuItemList) {
       result.add(
         MenuItemTile(
           menuItem: menuItem,
@@ -74,7 +85,6 @@ class MainScreen extends StatelessWidget {
                       return GridView.count(
                         crossAxisCount: 3,
                         childAspectRatio: 0.8,
-                        // itemCount: Provider.of<Data>(context).menuLength(),
                         children: menuList.data!,
                       );
                     }),
